@@ -1,0 +1,56 @@
+diff --git a/arch/arm/boot/dts/am335x-boneblack.dts b/arch/arm/boot/dts/am335x-boneblack.dts
+index b7a23e674..a8ad19f8a 100644
+--- a/arch/arm/boot/dts/am335x-boneblack.dts
++++ b/arch/arm/boot/dts/am335x-boneblack.dts
+@@ -66,3 +66,7 @@
+                 >;
+         };
+ };
++
++&usb0 {
++        interrupt-names = "mc";
++};
+diff --git a/arch/arm/mach-omap2/Kconfig b/arch/arm/mach-omap2/Kconfig
+index 9f27b486a..ce6a86c9d 100644
+--- a/arch/arm/mach-omap2/Kconfig
++++ b/arch/arm/mach-omap2/Kconfig
+@@ -125,8 +125,6 @@ config ARCH_OMAP2PLUS_TYPICAL
+ 	default y
+ 	select AEABI
+ 	select HIGHMEM
+-	select I2C
+-	select I2C_OMAP
+ 	select MENELAUS if ARCH_OMAP2
+ 	select NEON if CPU_V7
+ 	select PM
+diff --git a/arch/arm/mach-omap2/omap_hwmod_33xx_43xx_ipblock_data.c b/arch/arm/mach-omap2/omap_hwmod_33xx_43xx_ipblock_data.c
+index 3b8fe014a..ce159394a 100644
+--- a/arch/arm/mach-omap2/omap_hwmod_33xx_43xx_ipblock_data.c
++++ b/arch/arm/mach-omap2/omap_hwmod_33xx_43xx_ipblock_data.c
+@@ -652,7 +652,7 @@ struct omap_hwmod am33xx_i2c1_hwmod = {
+ 	.name		= "i2c1",
+ 	.class		= &i2c_class,
+ 	.clkdm_name	= "l4_wkup_clkdm",
+-	.flags		= HWMOD_16BIT_REG | HWMOD_SET_DEFAULT_CLOCKACT,
++	.flags		= HWMOD_16BIT_REG | HWMOD_SET_DEFAULT_CLOCKACT | HWMOD_NO_IDLE,
+ 	.main_clk	= "dpll_per_m2_div4_wkupdm_ck",
+ 	.prcm		= {
+ 		.omap4	= {
+@@ -666,7 +666,7 @@ struct omap_hwmod am33xx_i2c2_hwmod = {
+ 	.name		= "i2c2",
+ 	.class		= &i2c_class,
+ 	.clkdm_name	= "l4ls_clkdm",
+-	.flags		= HWMOD_16BIT_REG | HWMOD_SET_DEFAULT_CLOCKACT,
++	.flags		= HWMOD_16BIT_REG | HWMOD_SET_DEFAULT_CLOCKACT | HWMOD_NO_IDLE,
+ 	.main_clk	= "dpll_per_m2_div4_ck",
+ 	.prcm		= {
+ 		.omap4 = {
+@@ -680,7 +680,7 @@ struct omap_hwmod am33xx_i2c3_hwmod = {
+ 	.name		= "i2c3",
+ 	.class		= &i2c_class,
+ 	.clkdm_name	= "l4ls_clkdm",
+-	.flags		= HWMOD_16BIT_REG | HWMOD_SET_DEFAULT_CLOCKACT,
++	.flags		= HWMOD_16BIT_REG | HWMOD_SET_DEFAULT_CLOCKACT | HWMOD_NO_IDLE,
+ 	.main_clk	= "dpll_per_m2_div4_ck",
+ 	.prcm		= {
+ 		.omap4	= {
