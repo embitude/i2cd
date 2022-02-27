@@ -130,7 +130,7 @@ u16 omap_i2c_read_reg(struct omap_i2c_dev *i2c_dev, int reg);
 u16 wait_for_event(struct omap_i2c_dev *dev);
 
 /* Test Functions */
-int i2c_txrx(struct i2c_msg *i2c_msg, size_t len);
+int i2c_txrx(struct i2c_msg i2c_msg[], int len);
 
 /* Char Driver Interface */
 int chrdrv_init(struct omap_i2c_dev *i2c_dev);

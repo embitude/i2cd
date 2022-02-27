@@ -13,8 +13,7 @@ clean:
 # kernel build system and can use its language.
 else
 
-	obj-m := i2c.o platform_device.o platform_driver.o low_level_device.o i2c_dtb.o
+	obj-m := i2c.o platform_device.o platform_driver.o low_level_device.o
 	i2c-y := i2c_char.o low_level_driver.o
-	i2c_dtb-y := i2c_char.o low_level_driver_dtb.o
 
 endif

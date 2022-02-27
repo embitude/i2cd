@@ -17,7 +17,6 @@ struct omap_i2c_dev {
 	struct class *i2c_class;
 };
 
-
 /* Test Functions */
 int i2c_transmit(struct i2c_msg *i2c_msg, size_t len);
 int i2c_receive(struct i2c_msg *i2c_msg, size_t len);

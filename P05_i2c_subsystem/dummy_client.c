@@ -30,13 +30,21 @@ static ssize_t my_read(struct file* f, char *buf, size_t count, loff_t *f_pos)
 {
 	struct i2c_msg msg;
 	u8 tmp[2];
+	struct dummy_data *dev;
+	struct i2c_client *client;
 
-	// TODO: Extract the pointer to dummy_data from private data field
-	// TODO: Get the i2c_client from dummy_data struct
-	
-	// TODO: Populate the i2c_msg
+	//TODO 7.9: Extract the pointer to dummy_data from private data field
+	struct i2c_adapter *adap = dev->client->adapter;
+	//TODO 7.10: Get the i2c_client from dummy_data struct
 
-	// TODO: Initiate the i2c transaction
+	memset(&msg, 0, sizeof(struct i2c_msg));
+
+	msg.addr = client->addr;
+	msg.flags |= I2C_M_RD;
+	msg.len = sizeof(tmp);
+	msg.buf = tmp;
+
+	//TODO 7.11: Initiate the i2c transaction
 	printk("Invoking Transfer\n");
 
 	printk("In client, tmp[0]: %x, tmp[1] = %x\n", tmp[0], tmp[1]);
@@ -47,13 +55,19 @@ static ssize_t my_write(struct file* f, const char *buf, size_t count, loff_t *f
 {
 	u8 tmp[2] = {0xaa, 0xbb};
 	struct i2c_msg msg;
+	struct dummy_data *dev;
+	struct i2c_client *client;
 
-	// TODO: Extract the pointer to dummy_data from private data field
-	// TODO: Get the i2c_client from dummy_data struct
+	//TODO 7.5: Extract the pointer to dummy_data from private data field and assign it to dev;
 
-	// TODO: Populate the i2c_msg
+	struct i2c_adapter *adap = dev->client->adapter;
 
-	// TODO: Initiate the i2c transaction
+	//TODO: 7.6 Get the i2c_client from dummy_data struct
+
+
+	//TODO 7.7: Populate the i2c_msg - msg.addr, msg.flags, msg.buf & msg.len
+
+	//TODO 7.8: Initiate the i2c transaction with i2c_transfer (adapter, msg, count)
 	printk("Invoking Transfer\n");
 
 	return count;
@@ -145,26 +159,26 @@ static int dummy_probe(struct i2c_client *client, const struct i2c_device_id *id
 	return 0;
 }
 
-// TODO: Populate the id table to expose the devices supported
+//TODO 7.1: Populate the id table to expose the devices supported
 static const struct i2c_device_id dummy_ids[] = {
 	{ },
 	{ } // Don't delete this. Serves as terminator
 };
 MODULE_DEVICE_TABLE(i2c, dummy_ids);
 
-// TODO: Populate the i2c_driver structure
+//TODO 7.2: Populate the i2c_driver structure, use .id_table
 static struct i2c_driver dummy_driver = {
 };
 
 static int __init dummy_init(void)
 {
-	// TODO: Register the dummy client driver
+	//TODO 7.3: Register the dummy client driver
 	return 0;
 }
 
 static void __exit dummy_exit(void)
 {
-	// TODO: De-register the dummy client driver
+	//TODO 7.4: De-register the I2c client driver
 }
 
 module_init(dummy_init);

@@ -25,13 +25,13 @@ int dummy_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[], int num)
 {
 	printk("Dummy transfer invoked\n");
 	/*
-	 * TODO: Print the i2c_msg buff contents for tx and 
+	 * TODO 7.18: Print the i2c_msg buff contents for tx and 
 	 * update the contents with some data for receive
 	 */
 	return 0;
 }
 
-// TODO: Populate the i2c_algo with callback functions
+//TODO 7.14: Populate the i2c_algo with callback functions
 static const struct i2c_algorithm dummy_i2c_algo = {
 };
 
@@ -45,14 +45,20 @@ static int dummy_i2c_probe(struct platform_device *pdev)
 	adap->owner = THIS_MODULE;
 	adap->class = I2C_CLASS_HWMON;
 	strlcpy(adap->name, "Dummy I2C adapter", sizeof(adap->name));
-	// TODO: Initialize the adapter algo field
+
+	//TODO 7.15: Initialize the adapter algo field
 
 	adap->dev.parent = &pdev->dev;
 	adap->dev.of_node = pdev->dev.of_node;
 
 	/* i2c device drivers may be active on return from add_adapter() */
 	adap->nr = pdev->id;
-	// TODO: Register the adapter with i2c subsystem
+
+	// TODO 7.16: Register the adapter with i2c subsystem
+	if (r) {
+		printk("Failure adding adapter\n");
+		return r;
+	}
 	
 	platform_set_drvdata(pdev, adap);
 	return r;
@@ -61,12 +67,12 @@ static int dummy_i2c_probe(struct platform_device *pdev)
 static int dummy_i2c_remove(struct platform_device *pdev)
 {
 	struct i2c_adapter *adapter = platform_get_drvdata(pdev);
-	// TODO: De-register the adapter from the I2C subystem
+	//TODO 7.17: De-register the adapter from the I2C subystem
 
 	return 0;
 }
 
-// TODO: Populate the dummy_i2c_of_match with compatible property
+//TODO 7.12: Populate the dummy_i2c_of_match with compatible property
 static const struct of_device_id dummy_i2c_of_match[] = {
 	{
 	},
@@ -74,7 +80,8 @@ static const struct of_device_id dummy_i2c_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, dummy_i2c_of_match);
 
-// TODO: Populate the dummy_i2c_driver
+//TODO 7.13: Populate the dummy_i2c_driver
+//Use .of_match_table = of_match_ptr for matching
 static struct platform_driver dummy_i2c_driver = {
 };
 

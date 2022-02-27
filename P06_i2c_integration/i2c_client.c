@@ -39,22 +39,36 @@ static ssize_t my_read(struct file *f, char __user *buf, size_t count, loff_t *o
 {
 	struct i2c_msg msg[2];
 	u8 buff[6] = {0x00, 0x60, 0xaa};
-	int i;
+	int i, ret = 0;
+	struct i2c_adapter *adap;
+	struct i2c_client *client;
 
 	/*
-	 * TODO: Get chrdev_data from private data field and 
+	 * TODO 9.14: Get chrdev_data from private data field and 
 	 * correspondingly get i2c_adapter and i2c_client to 
 	 * be used in subsequent APIs
 	 */
 	memset(msg, 0, sizeof(msg));
 
 	/* 
-	 * TODO: Since read invokes i2c transmit and i2c receive,
+	 * TODO 8.8: Since read invokes i2c transmit and i2c receive,
 	 * there is a need to send 2 i2c_msg - one for transmit
 	 * and other for receive.
-	 * Initialize the fields for both i2c_msg & invoke the 
-	 * i2c_transfer to initiate the transaction on the bus
+	 * Initialize the fields for both i2c_msg 
+	 * msg.buff, msg.len and msg.addr for msg[0] and msg[1]
+	 * Use I2C_M_RD flag for msg[1]
 	 */
+
+	//TODO 9.15: Get the slave address from i2c_client data structure
+
+	printk("Initiatiating Transaction\n");
+
+	//TODO 9.16 Invoke the i2c_transfer
+	if (ret < 0) {
+		printk("Error in reception\n");
+		return -1;
+	}
+	printk("The data is:\n");
 
 	for (i = 0; i < 3; i++) {
 	       printk("%x\t", msg[1].buf[i]);
@@ -66,19 +80,28 @@ static ssize_t my_read(struct file *f, char __user *buf, size_t count, loff_t *o
 static ssize_t my_write(struct file *f, const char __user *buf, size_t count, loff_t *off)
 {
 	struct i2c_msg msg;
-	u8 buff[3] = {0x00, 0x60, 0xaa};
+	u8 buff[3] = {0x00, 0x30, 0xaa};
+	int ret = 0;
 
 	/*
-	 * TODO: Get chrdev_data from private data field and 
+	 * TODO 9.11: Get chrdev_data from private data field and 
 	 * correspondingly get i2c_adapter and i2c_client to 
 	 * be used in subsequent APIs
 	 */
 
 	memset(&msg, 0, sizeof(msg));
 	/* 
-	 * TODO: Initialize the i2c_msg fields & invoke the
+	 * TODO 9.12: Initialize the i2c_msg fields & invoke the
 	 * i2c_transfer API to transfer over the I2C bus
 	 */
+
+	//TODO 9.13: Invoke i2c_transfer for 1 message
+	// Takes 3 arguments - adapter, msg and count of messages
+	if (ret < 0) {
+		printk("Error in transmission\n");
+		return -1;
+	}
+
 	return count;
 }
 
@@ -151,26 +174,27 @@ static int chrdev_remove(struct i2c_client *client)
 	return 0;
 }
 
-// TODO: Populate the id table to expose the devices supported
+// TODO 9.7: Populate the id table to expose the devices supported
 static const struct i2c_device_id chrdev_ids[] = {
 	{ },
 	{ } // Don't delete this. Serves as terminator
 };
 MODULE_DEVICE_TABLE(i2c, chrdev_ids);
 
-// TODO: Populate the i2c_driver structure
+// TODO 9.8: Populate the i2c_driver structure
+// Add .probe, .remove and .id_table
 static struct i2c_driver chrdev_driver = {
 };
 
 static int __init chrdev_init(void)
 {
-	// TODO: Register the client driver
+	// TODO 9.9: Register the client driver
 	return 0;
 }
 
 static void __exit chrdev_exit(void)
 {
-	// TODO: De-register the client driver
+	// TODO 9.10: De-register the client driver
 }
 
 module_init(chrdev_init)

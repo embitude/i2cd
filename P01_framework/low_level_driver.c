@@ -30,23 +30,21 @@ int i2c_receive(struct i2c_msg *msg, size_t count)
 	return 0;
 }
 
-static int __init omap_i2c_init_driver(void)
+static int __init i2c_init_driver(void)
 {
 	/* Char interface related initialization */
-	// TODO: Create the class with name i2cdrv
-	// TODO: Initialize the character driver interface
+	// TODO 1.1 : Initialize the character driver interface
 
 	return 0;
 }
 
-static void __exit omap_i2c_exit_driver(void)
+static void __exit i2c_exit_driver(void)
 {
-	// TODO: De-initialize the character driver interface
-	// TODO: Delete the i2cdrv class
+	// TODO 1.2: De-initialize the character driver interface
 }
 
-module_init(omap_i2c_init_driver);
-module_exit(omap_i2c_exit_driver);
+module_init(i2c_init_driver);
+module_exit(i2c_exit_driver);
 
 MODULE_AUTHOR("Embitude Trainings <info@embitude.in>");
 MODULE_DESCRIPTION("Low level I2C driver");

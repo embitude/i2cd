@@ -112,19 +112,35 @@ static const u8 reg_map_ip_v2[] = {
 /* OCP_SYSCONFIG bit definitions */
 #define SYSC_SOFTRESET_MASK		(1 << 1)
 
+
+
 struct omap_i2c_dev {
 	void __iomem		*base;		/* virtual */
-	u16 			speed;
-	u16			iestate;	/* Saved interrupt register */
-	u8			*regs;
-	dev_t devt;
-	struct cdev cdev;
-	struct class *i2c_class;
+	int					irq;
+	u16					speed;
+	u16					iestate;	/* Saved interrupt register */
+
+	struct completion	cmd_complete;
+	u16					cmd_err;
+	u8 					*buf;
+	u8					*regs;
+	size_t				buf_len;
+	u8					threshold;
+	u8					fifo_size;
+	unsigned 			receiver:1;
 };
 
 /* Utility Functions */
 void omap_i2c_write_reg(struct omap_i2c_dev *i2c_dev, int reg, u16 val);
 u16 omap_i2c_read_reg(struct omap_i2c_dev *i2c_dev, int reg);
 u16 wait_for_event(struct omap_i2c_dev *dev);
+
+/* Test Functions */
+//int i2c_transmit(struct i2c_msg *i2c_msg, size_t len);
+int i2c_txrx(struct i2c_adapter *i2c_adap, struct i2c_msg i2c_msg[], int len);
+
+/* Char Driver Interface */
+int chrdrv_init(struct omap_i2c_dev *i2c_dev);
+void chrdrv_exit(struct omap_i2c_dev *i2c_dev);
 
 #endif
