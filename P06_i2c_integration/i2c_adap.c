@@ -395,6 +395,109 @@ int omap_i2c_init(struct omap_i2c_dev *dev)
         return 0;
 }
 
+static void receive_data(struct omap_i2c_dev *omap, u8 num_bytes)
+{
+        u8 w;
+        printk("Recieving %d bytes of data\n", num_bytes);
+        while (num_bytes--) {
+                w = omap_i2c_read_reg(omap, OMAP_I2C_DATA_REG);
+                *omap->buf++ = w;
+                omap->buf_len--;
+       }
+}
+
+static int transmit_data(struct omap_i2c_dev *omap, u8 num_bytes)
+{
+    u8 w;
+    printk("Transmitting %d bytes of data\n", num_bytes);
+    while (num_bytes--) {
+        w = *omap->buf++;
+        omap->buf_len--;
+        omap_i2c_write_reg(omap, OMAP_I2C_DATA_REG, w);
+    }
+    return 0;
+}
+
+static irqreturn_t thread_fn(int this_irq, void *dev_id) {
+    u16 bits, status;
+    int err = 0, ret = 0;
+
+    do {
+        bits = omap_i2c_read_reg(&i2c_dev, OMAP_I2C_IE_REG);
+        status = omap_i2c_read_reg(&i2c_dev, OMAP_I2C_STAT_REG);
+        status &= bits;
+
+        /* If we're in receiver mode, ignore XDR/XRDY */
+        if (i2c_dev.receiver)
+            status &= ~(OMAP_I2C_STAT_XDR | OMAP_I2C_STAT_XRDY);
+        else
+            status &= ~(OMAP_I2C_STAT_RDR | OMAP_I2C_STAT_RRDY);
+            if (!status) {
+                    goto out;
+            }
+
+        if (status & OMAP_I2C_STAT_XRDY) {
+            printk("Got XRDY\n");
+
+            ret = transmit_data(&i2c_dev, i2c_dev.threshold);
+            if (ret < 0)
+                break;
+            omap_i2c_ack_stat(&i2c_dev, OMAP_I2C_STAT_XRDY);
+            continue;
+        }
+        if (status & OMAP_I2C_STAT_RRDY) {
+            printk("Got RRDY\n");
+            receive_data(&i2c_dev, i2c_dev.threshold);
+            omap_i2c_ack_stat(&i2c_dev, OMAP_I2C_STAT_RRDY);
+            continue;
+            }
+        if (status & OMAP_I2C_STAT_XDR) {
+            printk("Got XDR\n");
+            ret = transmit_data(&i2c_dev, i2c_dev.buf_len);
+           if (ret < 0)
+                break;
+
+            omap_i2c_ack_stat(&i2c_dev, OMAP_I2C_STAT_XDR);
+            continue;
+        }
+
+        if (status & OMAP_I2C_STAT_RDR) {
+            printk("Got RDR\n");
+
+            receive_data(&i2c_dev, i2c_dev.buf_len);
+            omap_i2c_ack_stat(&i2c_dev, OMAP_I2C_STAT_RDR);
+            continue;
+        }
+
+        if (status & OMAP_I2C_STAT_ARDY) {
+            printk("Got ARDY\n");
+            omap_i2c_ack_stat(&i2c_dev, OMAP_I2C_STAT_ARDY);
+            break;
+        }
+    } while (status);
+
+    i2c_dev.cmd_err |= err;
+    // TODO 10.6: Send completion 
+    complete(&(i2c_dev.cmd_complete));
+
+out:
+    return IRQ_HANDLED;
+}
+
+static irqreturn_t irq_fn(int irq, void *dev_id)
+{
+    struct omap_i2c_dev *omap = dev_id;
+    irqreturn_t ret = IRQ_HANDLED;
+    u16 mask, stat;
+
+    stat = omap_i2c_read_reg(omap, OMAP_I2C_STAT_REG);
+    mask = omap_i2c_read_reg(omap, OMAP_I2C_IE_REG);
+
+    if (stat & mask)
+        ret = IRQ_WAKE_THREAD;
+    return ret;
+}
+
 static int i2c_drv_probe(struct platform_device *pdev)
 {
 	struct resource *res;
