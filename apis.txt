@@ -1,0 +1,40 @@
+Character Driver Registration & De-registration
+-----------------------------------------------
+#include <linux/fs.h>
+int alloc_chrdev_region(dev_t *, unsigned, unsigned, const char *);
+int register_chrdev_region(dev_t, unsigned, const char *);
+void unregister_chrdev_region(dev_t, unsigned);
+
+Registering file operations
+---------------------------
+#include <linux/cdev.h>
+void cdev_init(struct cdev *, const struct file_operations *fops);
+int cdev_add(struct cdev *, dev_t, unsigned minor_count);
+
+Exchanging the data with user space
+-----------------------------------
+static copy_to_user(void __user *to, const void *from, unsigned long n);
+static copy_from_user(void *to, const void __user *from, unsigned long n);
+
+Automatic device file creation
+------------------------------
+include <linux/device.h>
+class_create(owner, name) /* macro which returns the pointer to the struct class */
+void class_destroy(struct class *cls);
+
+struct device *device_create(struct class *cls, struct device *parent,vdev_t devt, 
+								void *drvdata, const char *fmt, ...);
+void device_destroy(struct class *cls, dev_t devt);
+
+Setting & Getting the gpio status
+---------------------------------
+#include <linux/gpio.h>
+void gpio_set_value(unsigned int gpio, int value)
+int gpio_get_value(unsigned int gpio)
+
+IOCTL
+-----
+#define _IO(type,nr)
+#define _IOR(type,nr,size)
+#define _IOW(type,nr,size)
+#define _IOWR(type,nr,size)
