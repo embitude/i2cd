@@ -1,4 +1,5 @@
 #include <linux/module.h>
+#include <linux/version.h>
 #include <linux/delay.h>
 #include <linux/i2c.h>
 #include <linux/err.h>
@@ -44,7 +45,7 @@ static int dummy_i2c_probe(struct platform_device *pdev)
 	adap = devm_kzalloc(&pdev->dev, sizeof(struct i2c_adapter), GFP_KERNEL);
 	adap->owner = THIS_MODULE;
 	adap->class = I2C_CLASS_HWMON;
-	strlcpy(adap->name, "Dummy I2C adapter", sizeof(adap->name));
+	strscpy(adap->name, "Dummy I2C adapter", sizeof(adap->name));
 
 	//TODO 7.15: Initialize the adapter algo field
 
@@ -64,12 +65,18 @@ static int dummy_i2c_probe(struct platform_device *pdev)
 	return r;
 }
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0))
 static int dummy_i2c_remove(struct platform_device *pdev)
+#else
+static void dummy_i2c_remove(struct platform_device *pdev)
+#endif
 {
 	struct i2c_adapter *adapter = platform_get_drvdata(pdev);
 	//TODO 7.17: De-register the adapter from the I2C subystem
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0))
 	return 0;
+#endif
 }
 
 //TODO 7.12: Populate the dummy_i2c_of_match with compatible property

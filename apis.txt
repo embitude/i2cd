@@ -19,7 +19,10 @@ static copy_from_user(void *to, const void __user *from, unsigned long n);
 Automatic device file creation
 ------------------------------
 include <linux/device.h>
+/* Use below for 4.19.103 Kernel */
 class_create(owner, name) /* macro which returns the pointer to the struct class */
+/* Use below for 6.12.54 Kernel */
+class_create(name) /* macro which returns the pointer to the struct class */
 void class_destroy(struct class *cls);
 
 struct device *device_create(struct class *cls, struct device *parent,vdev_t devt, 

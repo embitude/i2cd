@@ -1,9 +1,11 @@
 #include <linux/kernel.h>
+#include <linux/version.h>
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/gpio.h>
 #include <linux/fs.h>
+#include <linux/of.h>
 #include <linux/errno.h>
 #include <asm/uaccess.h>
 #include <linux/version.h>
@@ -97,7 +99,11 @@ static int sample_drv_probe(struct platform_device *pdev) {
 	}
 	printk("Major Nr: %d\n", MAJOR(first));
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6,4,0))
 	if ( (cl = class_create( THIS_MODULE, "gpiodrv" ) ) == NULL )
+#else
+	if ( (cl = class_create("gpiodrv") ) == NULL )
+#endif
 	{
 		printk( KERN_ALERT "Class creation failed\n" );
 		unregister_chrdev_region( first, 1 );
@@ -126,7 +132,12 @@ static int sample_drv_probe(struct platform_device *pdev) {
 	return 0;
 }
 
-static int sample_drv_remove(struct platform_device *pdev){
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0))
+static int sample_drv_remove(struct platform_device *pdev)
+#else
+static void sample_drv_remove(struct platform_device *pdev)
+#endif
+{
 	cdev_del( &c_dev );
 	device_destroy( cl, first );
 	class_destroy( cl );
@@ -134,7 +145,9 @@ static int sample_drv_remove(struct platform_device *pdev){
 
 	printk(KERN_ALERT "Device unregistered\n");
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0))
 	return 0;
+#endif
 }
 static const struct of_device_id gpio_led_dt[] = {
 	    { .compatible = "my-led", },

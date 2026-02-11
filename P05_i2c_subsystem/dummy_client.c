@@ -1,4 +1,5 @@
 #include <linux/kernel.h>
+#include <linux/version.h>
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -97,7 +98,11 @@ struct file_operations fops = {
 	.write = my_write,
 };
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0))
 static int dummy_remove(struct i2c_client *client)
+#else
+static void dummy_remove(struct i2c_client *client)
+#endif
 {
 	struct dummy_data *dev;
 	printk("Remove Invoked\n");
@@ -106,10 +111,16 @@ static int dummy_remove(struct i2c_client *client)
 	device_destroy(dev->class, dev->devt);
 	class_destroy(dev->class);
 	unregister_chrdev_region(dev->devt, 1);
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0))
 	return 0;
+#endif
 
 }
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0))
 static int dummy_probe(struct i2c_client *client, const struct i2c_device_id *id)
+#else
+static int dummy_probe(struct i2c_client *client)
+#endif
 {
 	struct dummy_data *data;
 	int init_result;
@@ -132,7 +143,11 @@ static int dummy_probe(struct i2c_client *client, const struct i2c_device_id *id
 	}
 	printk("Major Nr: %d\n", MAJOR(data->devt));
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6,4,0))
 	if ((data->class = class_create(THIS_MODULE, "i2cdummy")) == NULL)
+#else
+	if ((data->class = class_create("i2cdummy")) == NULL)
+#endif
 	{
 		printk("Class creation failed\n");
 		unregister_chrdev_region(data->devt, 1);

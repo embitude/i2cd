@@ -1,4 +1,5 @@
 #include <linux/module.h>
+#include <linux/version.h>
 #include <linux/delay.h>
 #include <linux/i2c.h>
 #include <linux/err.h>
@@ -348,10 +349,16 @@ static int i2c_drv_probe(struct platform_device *pdev)
 	return 0;
 }
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0))
 static int i2c_drv_remove(struct platform_device *pdev)
+#else
+static void i2c_drv_remove(struct platform_device *pdev)
+#endif
 {
 	// TODO 1.2: De-initialize the character driver interface
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0))
 	return 0;
+#endif
 }
 
 //TODO 6.1: Initialize the compatible property

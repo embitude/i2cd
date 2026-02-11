@@ -1,4 +1,5 @@
 #include <linux/module.h>
+#include <linux/version.h>
 #include <linux/delay.h>
 #include <linux/i2c.h>
 #include <linux/err.h>
@@ -569,7 +570,7 @@ static int i2c_drv_probe(struct platform_device *pdev)
 
 	adap->owner = THIS_MODULE;
 	adap->class = I2C_CLASS_HWMON;
-	strlcpy(adap->name, "My I2C adapter", sizeof(adap->name));
+	strscpy(adap->name, "My I2C adapter", sizeof(adap->name));
 	// TODO 9.2: Register the algo 
 
 	adap->dev.parent = &pdev->dev;
@@ -590,13 +591,19 @@ static int i2c_drv_probe(struct platform_device *pdev)
 	return 0;
 }
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0))
 static int i2c_drv_remove(struct platform_device *pdev)
+#else
+static void i2c_drv_remove(struct platform_device *pdev)
+#endif
 {
 	struct i2c_adapter *adapter = platform_get_drvdata(pdev);
 	//TODO 9.5: De-register the adapter from the I2C subsystem
 
 	// TODO 9.6: Remove Character driver De-initialization 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0))
 	return 0;
+#endif
 }
 
 //TODO 6.1: Initialize the compatible property

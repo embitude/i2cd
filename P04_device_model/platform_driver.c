@@ -1,5 +1,6 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
+#include <linux/version.h>
 #include <linux/platform_device.h>
 
 #define DRIVER_NAME "Sample_Pldrv"
@@ -33,10 +34,16 @@ static int sample_drv_probe(struct platform_device *pdev)
 	printk("GPIO Number is %d\n", gpio_number);
 	return 0; 
 }
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0))
 static int sample_drv_remove(struct platform_device *pdev)
 {
 	return 0;
 }
+#else
+static void sample_drv_remove(struct platform_device *pdev)
+{
+}
+#endif
 
 static struct platform_driver sample_pldriver = 
 {

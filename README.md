@@ -12,4 +12,4 @@ Description of the various folders:
 Brief about the corresponding online training(s) conducted @ Embitude (https://embitude.in)
 
 + I2C Drivers (I2CD)
-	- Info Link: https://embitude.in/index.php/i2cdriverupdate/
+	- Info Link: https://embitude.in/i2cd
