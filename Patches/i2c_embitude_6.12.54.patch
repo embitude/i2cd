@@ -1,0 +1,49 @@
+From 755a240de63f6c601ab2f4a0e897b951c448be22 Mon Sep 17 00:00:00 2001
+From: Embitude Trainings <info@embitude.in>
+Date: Wed, 11 Feb 2026 11:43:04 +0530
+Subject: [PATCH] Added Org I2C Controller Driver as Module and remove the Usb
+ gadget dependeny on TPS
+
+---
+ arch/arm/boot/dts/ti/omap/am335x-boneblack.dts | 12 ++++++++++++
+ arch/arm/mach-omap2/Kconfig                    |  1 -
+ 2 files changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/ti/omap/am335x-boneblack.dts b/arch/arm/boot/dts/ti/omap/am335x-boneblack.dts
+index b4fdcf9c0..a5eec1bc6 100644
+--- a/arch/arm/boot/dts/ti/omap/am335x-boneblack.dts
++++ b/arch/arm/boot/dts/ti/omap/am335x-boneblack.dts
+@@ -14,6 +14,18 @@ / {
+ 	compatible = "ti,am335x-bone-black", "ti,am335x-bone", "ti,am33xx";
+ };
+ 
++&{/ocp/interconnect@44c00000/segment@200000/target-module@b000} {
++    /* Prevent the kernel from resetting or idling this module at boot */
++    ti,no-reset-on-init;
++    ti,no-idle;
++    status = "okay";
++};
++
++&usb0 {
++    interrupts-extended = <&intc 18>;
++    interrupt-names = "mc";
++};
++
+ &cpu0_opp_table {
+ 	/*
+ 	 * All PG 2.0 silicon may not support 1GHz but some of the early
+diff --git a/arch/arm/mach-omap2/Kconfig b/arch/arm/mach-omap2/Kconfig
+index 821727eef..6396129f3 100644
+--- a/arch/arm/mach-omap2/Kconfig
++++ b/arch/arm/mach-omap2/Kconfig
+@@ -137,7 +137,6 @@ config ARCH_OMAP2PLUS_TYPICAL
+ 	select AEABI
+ 	select HIGHMEM
+ 	select I2C
+-	select I2C_OMAP
+ 	select MENELAUS if ARCH_OMAP2
+ 	select NEON if CPU_V7
+ 	select REGULATOR
+-- 
+2.34.1
+
