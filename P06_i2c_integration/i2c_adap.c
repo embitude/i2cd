@@ -275,10 +275,6 @@ int i2c_txrx_intr(struct i2c_msg msg[], int count)
 
 		//TODO 8.4 Update the TRX as per the I2C_M_RD flags
 
-		/* 
-		 * TODO 8.5: As per the earlier exercises, but check for 3
-		 * conditions - XRDY, RRDY and ARDY
-		 */
 
 		// TODO 10.6: Re-initialize the completion data data structure
 		// API: reinit_completion(struct completion *x);
